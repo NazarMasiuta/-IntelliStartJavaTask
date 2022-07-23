@@ -186,7 +186,7 @@ public class Program {
     }
     public static void displayAllProducts(Products[] p,Customers[] c) {
         Scanner input = new Scanner(System.in);
-        println("List of all products offered: ");
+        println("\nList of all products offered: ");
         if(p.length == 0)
             println("No products in the system yet.");
         else
