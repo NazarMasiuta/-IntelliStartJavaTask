@@ -4,7 +4,6 @@ public class Customers {
         this.lastName = lastName;
         this.id = id;
         this.money = money;
-        ++customerCount;
     }
     public void displayPurchases() {
         System.out.print(firstName + " " + lastName + " has purchased the following: ");
@@ -15,5 +14,4 @@ public class Customers {
     String lastName;
     int id;
     double money;
-    static int customerCount;
 }

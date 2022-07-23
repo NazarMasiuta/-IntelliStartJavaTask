@@ -15,7 +15,7 @@ public class Program {
 
     public static void mainMenu(Products[] p, Customers[] c) {
         Scanner input = new Scanner(System.in);
-        println("You are in the main menu. What would you like to do:\n" +
+        println("\nYou are in the main menu. What would you like to do:\n" +
                 "Log in: press 1.\n" +
                 "Register: press 2.\n" +
                 "Display all products: press 3.\n" +
@@ -23,7 +23,7 @@ public class Program {
                 "See all customers who purchased a product: press 5.\n" +
                 "See all products purchased by a customer: press 6.\n" +
                 "Delete a customer: press 7.\n" +
-                "Delete a product press 8.\n" +
+                "Delete a product: press 8.\n" +
                 "Add a product: press 9.");
         int mainMenuChoice = 0;
         try {
@@ -41,7 +41,7 @@ public class Program {
             case 4 -> displayAllCustomers(p, c);
             case 5 -> displayBuyersOfAProduct(p, c);
             case 6 -> displayProductsOfACustomer(p, c);
-            case 7 -> deleteAClient(p, c);
+            case 7 -> deleteACustomer(p, c);
             case 8 -> deleteAProduct(p, c);
             case 9 -> addAProduct(p, c);
             default -> {
@@ -63,7 +63,7 @@ public class Program {
 
     public static void clientLogIn(Products[] p, Customers[] c) {
         Scanner input = new Scanner(System.in);
-        print("Please,enter your customer ID to log in: ");
+        print("\nPlease,enter your customer ID to log in: ");
         int inputID1 = 0;
         try {
             inputID1 = input.nextInt();
@@ -107,7 +107,7 @@ public class Program {
 
     public static void purchase(Products[] p, Customers[] c, int customerIndex) {
         Scanner input = new Scanner(System.in);
-        print("Enter the product's ID: ");
+        print("\nEnter the product's ID: ");
         int inputID2 = 0;
         try {
             inputID2 = input.nextShort();
@@ -156,7 +156,7 @@ public class Program {
     }
     public static void customerRegistration(Products[]p, Customers[] c) {
         Scanner input = new Scanner(System.in);
-        print("New customer registration\nEnter your first name: ");
+        print("\nNew customer registration\nEnter your first name: ");
         String firstName = input.next();
         print("Enter your second name: ");
         String lastName = input.next();
@@ -197,7 +197,7 @@ public class Program {
     }
     public static void displayAllCustomers(Products[] p,Customers[] c) {
         Scanner input = new Scanner(System.in);
-        println("The following customers are registered:");
+        println("\nThe following customers are registered:");
         for(int i = 0; i < c.length; ++i) {
             println(c[i].firstName + " " + c[i].lastName + " (ID: " + c[i].id + ")");
         }
@@ -205,7 +205,7 @@ public class Program {
     }
     public static void displayBuyersOfAProduct(Products[] p,Customers[] c) {
         Scanner input = new Scanner(System.in);
-        print("Please, enter the ID of the product: ");
+        print("\nPlease, enter the ID of the product: ");
         int inputID = 0;
         try {
             inputID = input.nextInt();
@@ -272,10 +272,102 @@ public class Program {
             println("Here is a list of products that this customer bought: " + c[customerIndex].purchases);
         backToMainMenu(p, c);
     }
-    public static void deleteAClient(Products[] p,Customers[] c) {
+    public static void deleteACustomer(Products[] p,Customers[] c) {
+        Scanner input = new Scanner(System.in);
+        print("Please, enter the ID of the customer to delete: ");
+        int inputID = 0;
+        try {
+            inputID = input.nextInt();
+        } catch (InputMismatchException exception) {
+            println("Wrong id format! Try again.");
+            deleteACustomer(p, c);
+        }
+        if(inputID <= 1000 || inputID >= 10000) {
+            println("Wrong product id format! Try again.");
+            deleteACustomer(p, c);
+        }
+
+        int customerIndex = 0;
+        boolean idRecognized = false;
+        for(int i = 0; i < c.length; ++i) {
+            if(inputID == c[i].id) {
+                idRecognized = true;
+                customerIndex = i;
+                break;
+            }
+        }
+        if(!idRecognized) {
+            println("No customer with such id found! Try again.");
+            deleteACustomer(p, c);
+        }
+
+        Customers[] buffer = new Customers[c.length - 1];
+        boolean elementReached = false;
+        for(int i = 0; i < c.length; ++i) {
+            if(customerIndex == i) {
+                elementReached = true;
+                continue;
+            }
+            if(elementReached)
+                buffer[i-1] = c[i];
+            else
+                buffer[i] = c[i];
+        }
+        for(int i = 0; i < p.length; ++i) {
+            p[i].buyers.replaceAll(String.valueOf(c[customerIndex].id), "");
+        }
+        c = buffer;
+
+        println("Customer successfully deleted!");
         backToMainMenu(p, c);
     }
     public static void deleteAProduct(Products[] p,Customers[] c) {
+        Scanner input = new Scanner(System.in);
+        print("Please, enter the ID of the product to delete: ");
+        int inputID = 0;
+        try {
+            inputID = input.nextInt();
+        } catch (InputMismatchException exception) {
+            println("Wrong id format! Try again.");
+            deleteAProduct(p, c);
+        }
+        if(inputID <= 1000 || inputID >= 10000) {
+            println("Wrong customer id format! Try again.");
+            deleteAProduct(p, c);
+        }
+
+        int productIndex = 0;
+        boolean idRecognized = false;
+        for(int i = 0; i < p.length; ++i) {
+            if(inputID == p[i].id) {
+                idRecognized = true;
+                productIndex = i;
+                break;
+            }
+        }
+        if(!idRecognized) {
+            println("No customer with such id found! Try again.");
+            deleteAProduct(p, c);
+        }
+
+        Products[] buffer = new Products[p.length - 1];
+        boolean elementReached = false;
+        for(int i = 0; i < p.length; ++i) {
+            if(productIndex == i) {
+                elementReached = true;
+                continue;
+            }
+            if(elementReached)
+                buffer[i-1] = p[i];
+            else
+                buffer[i] = p[i];
+        }
+        for(int i = 0; i < c.length; ++i) {
+            c[i].purchases.replaceAll(p[productIndex].name, "");
+        }
+        p = buffer;
+
+        println("Product successfully deleted!");
         backToMainMenu(p, c);
     }
     public static void addAProduct(Products[] p,Customers[] c) {

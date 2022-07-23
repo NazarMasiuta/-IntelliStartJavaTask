@@ -3,7 +3,6 @@ public class Products {
         this.name = name;
         this.id = id;
         this.price = price;
-        ++productCount;
     }
 
     public void displayBuyers() {
@@ -14,5 +13,4 @@ public class Products {
     int id;
     double price;
     String buyers = "";
-    static int productCount = 0;
 }
