@@ -1,5 +1,5 @@
 public class Products {
-    Products (String name, int id, double price) { //maybe use byte for id (to save memory)
+    Products (String name, int id, double price) {
         this.name = name;
         this.id = id;
         this.price = price;

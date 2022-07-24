@@ -1,30 +1,28 @@
-import java.util.InputMismatchException;
+import java.util.InputMismatchException; //exception to catch after improper input
 import java.util.Random;
 import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
+
 
 public class Program {
-    //Supplementary methods:
-    public static void println(Object line) {
-        System.out.println(line);
-    }
+    //methods for shorter prints
+    public static void println(Object line) { System.out.println(line); }
     public static void print(Object line) {
         System.out.print(line);
     }
-    //here has to be an error method
+
 
     public static void mainMenu(Products[] p, Customers[] c) {
         Scanner input = new Scanner(System.in);
         println("\nYou are in the main menu. What would you like to do:\n" +
-                "Log in: press 1.\n" +
+                "Add a product: press 1.\n" +
                 "Register: press 2.\n" +
-                "Display all products: press 3.\n" +
+                "Log in: press 3.\n" +
                 "Display all customers: press 4.\n" +
-                "See all customers who purchased a product: press 5.\n" +
-                "See all products purchased by a customer: press 6.\n" +
-                "Delete a customer: press 7.\n" +
-                "Delete a product: press 8.\n" +
-                "Add a product: press 9.");
+                "Display all products: press 5.\n" +
+                "See all customers who purchased a product: press 6.\n" +
+                "See all products purchased by a customer: press 7.\n" +
+                "Delete a customer: press 8.\n" +
+                "Delete a product: press 9.");
         int mainMenuChoice = 0;
         try {
             mainMenuChoice = input.nextInt();
@@ -34,23 +32,25 @@ public class Program {
         }
 
         switch (mainMenuChoice) {
-
-            case 1 -> clientLogIn(p, c);
+            case 1 -> addAProduct(p, c);
             case 2 -> customerRegistration(p, c);
-            case 3 -> displayAllProducts(p, c);
+            case 3 -> clientLogIn(p, c);
             case 4 -> displayAllCustomers(p, c);
-            case 5 -> displayBuyersOfAProduct(p, c);
-            case 6 -> displayProductsOfACustomer(p, c);
-            case 7 -> deleteACustomer(p, c);
-            case 8 -> deleteAProduct(p, c);
-            case 9 -> addAProduct(p, c);
+            case 5 -> displayAllProducts(p, c);
+            case 6 -> displayBuyersOfAProduct(p, c);
+            case 7 -> displayProductsOfACustomer(p, c);
+            case 8 -> deleteACustomer(p, c);
+            case 9 -> deleteAProduct(p, c);
             default -> {
                 println("Wrong input format or no such option! Try again.");
                 mainMenu(p, c);
+                //Here and in other places I use recursive calls to deal with possible
+                //improper input (instead of cumbersome while-loops)
             }
         }
     }
 
+//backToMainMenu method is put at the end of each "action" methods
     public static void backToMainMenu(Products[] p, Customers[] c) {
         Scanner input = new Scanner(System.in);
         println("\nEnter \"M\" to go back to the Main Menu.");
@@ -61,6 +61,64 @@ public class Program {
         mainMenu(p, c);
     }
 
+    public static void addAProduct(Products[] p,Customers[] c) {
+        Scanner input = new Scanner(System.in);
+        print("Enter the name of the product you want to add: ");
+        String name = input.next();
+        double price = 0;
+        boolean inputAcceptable = false;
+        while(!inputAcceptable) {
+            print("Enter the price for the product: ");
+            price = input.nextDouble();
+            if(price >= 0)
+                inputAcceptable = true;
+            else
+                println("You can set price only to more than 0! Try again!");
+        }
+        Random random = new Random();
+        int id = random.nextInt(1000,10000); //add a check
+        Products[] buffer = new Products[p.length + 1];
+        for(int i = 0; i < p.length; ++i) {
+            buffer[i] = p[i];
+        }
+        buffer[p.length] = new Products(name, id, price);
+        p = buffer;
+        println("Product " + name + "(ID: " + id + ") created successfully!");
+        backToMainMenu(p, c);
+    }
+
+    public static void customerRegistration(Products[]p, Customers[] c) {
+        Scanner input = new Scanner(System.in);
+        print("\nNew customer registration\nEnter your first name: ");
+        String firstName = input.next();
+        print("Enter your second name: ");
+        String lastName = input.next();
+        boolean inputAcceptable = false;
+        double money = 0;
+        while(!inputAcceptable) {
+            print("Enter the amount of money you are now willing to put into your account: ");
+            money = input.nextDouble();
+            if(money >= 0)
+                inputAcceptable = true;
+            else
+                println("You can only put 0 or more into your account! Try again!");
+        }
+        Random random = new Random();
+        short id = (short) random.nextInt(1000,10000); //add a check for already existing id.
+
+        Customers[] buffer = new Customers[c.length + 1];
+        for(int i = 0; i < c.length; ++i) {
+            buffer[i] = c[i];
+        }
+        buffer[c.length] = new Customers(firstName, lastName, id, money);
+        c = buffer;
+
+        println(firstName + " " + lastName +
+                ", you were successfully registered! Your customer ID is " + id);
+        backToMainMenu(p, c);
+    }
+
+    //If client is successfully logged in he has an option to jump to purchase method
     public static void clientLogIn(Products[] p, Customers[] c) {
         Scanner input = new Scanner(System.in);
         print("\nPlease,enter your customer ID to log in: ");
@@ -154,36 +212,16 @@ public class Program {
             purchase(p, c, customerIndex);
         }
     }
-    public static void customerRegistration(Products[]p, Customers[] c) {
+
+    public static void displayAllCustomers(Products[] p,Customers[] c) {
         Scanner input = new Scanner(System.in);
-        print("\nNew customer registration\nEnter your first name: ");
-        String firstName = input.next();
-        print("Enter your second name: ");
-        String lastName = input.next();
-        boolean inputAcceptable = false;
-        double money = 0;
-        while(!inputAcceptable) {
-            print("Enter the amount of money you are now willing to put into your account: ");
-            money = input.nextDouble();
-            if(money >= 0)
-                inputAcceptable = true;
-            else
-                println("You can only put 0 or more into your account! Try again!");
-        }
-        Random random = new Random();
-        short id = (short) random.nextInt(1000,10000); //add a check for already existing id.
-
-        Customers[] buffer = new Customers[c.length + 1];
+        println("\nThe following customers are registered:");
         for(int i = 0; i < c.length; ++i) {
-            buffer[i] = c[i];
+            println(c[i].firstName + " " + c[i].lastName + " (ID: " + c[i].id + ")");
         }
-        buffer[c.length] = new Customers(firstName, lastName, id, money);
-        c = buffer;
-
-        println(firstName + " " + lastName +
-                ", you were successfully registered! Your customer ID is " + id);
         backToMainMenu(p, c);
     }
+
     public static void displayAllProducts(Products[] p,Customers[] c) {
         Scanner input = new Scanner(System.in);
         println("\nList of all products offered: ");
@@ -195,14 +233,7 @@ public class Program {
 
         backToMainMenu(p, c);
     }
-    public static void displayAllCustomers(Products[] p,Customers[] c) {
-        Scanner input = new Scanner(System.in);
-        println("\nThe following customers are registered:");
-        for(int i = 0; i < c.length; ++i) {
-            println(c[i].firstName + " " + c[i].lastName + " (ID: " + c[i].id + ")");
-        }
-        backToMainMenu(p, c);
-    }
+
     public static void displayBuyersOfAProduct(Products[] p,Customers[] c) {
         Scanner input = new Scanner(System.in);
         print("\nPlease, enter the ID of the product: ");
@@ -368,31 +399,6 @@ public class Program {
         p = buffer;
 
         println("Product successfully deleted!");
-        backToMainMenu(p, c);
-    }
-    public static void addAProduct(Products[] p,Customers[] c) {
-        Scanner input = new Scanner(System.in);
-        print("Enter the name of the product you want to add: ");
-        String name = input.next();
-        double price = 0;
-        boolean inputAcceptable = false;
-        while(!inputAcceptable) {
-            print("Enter the price for the product: ");
-            price = input.nextDouble();
-            if(price >= 0)
-                inputAcceptable = true;
-            else
-                println("You can set price only to more than 0! Try again!");
-        }
-        Random random = new Random();
-        int id = random.nextInt(1000,10000); //add a check
-        Products[] buffer = new Products[p.length + 1];
-        for(int i = 0; i < p.length; ++i) {
-            buffer[i] = p[i];
-        }
-        buffer[p.length] = new Products(name, id, price);
-        p = buffer;
-        println("Product " + name + "(ID: " + id + ") created successfully!");
         backToMainMenu(p, c);
     }
 
