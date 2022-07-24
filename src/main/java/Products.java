@@ -5,10 +5,6 @@ public class Products {
         this.price = price;
     }
 
-    public void displayBuyers() {
-        System.out.print("The following clients has purchased this product: ");
-        System.out.println(buyers);
-    }
     String name;
     int id;
     double price;
